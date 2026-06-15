@@ -7,7 +7,7 @@ from PIL import Image
 import matplotlib.cm as cm_color
 
 st.set_page_config(page_title="Tomato Leaf Disease Detector",
-                   page_icon="🍃", layout="wide")
+                   page_icon="🍅", layout="wide")
 
 # ----------------------------------------------------------------- styling
 st.markdown("""

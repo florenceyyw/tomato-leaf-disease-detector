@@ -43,4 +43,18 @@ Then:
   class, the confidence, and the full probability distribution as JSON. Interactive API
   documentation is available at `http://localhost:8000/docs`.
 
-Built for the MAT5124 Machine Learning group project.
+## Project information
+
+**Sunway University — School of Mathematical Sciences**  
+MAT5124 Machine Learning · Group Project Report · June 2026
+
+**Title:** Tomato Leaf Disease Detection Using Convolutional Neural Networks, Transfer
+Learning, Explainable Artificial Intelligence, and Deployment
+
+**Project theme:** Artificial Intelligence Solutions Lab, from Training to Real World Deployment
+
+**Prepared by**
+
+- Wong Yoke Yan (15093446)
+- Yeong Jiun Shiung (25109521)
+- Darren Yap Yee Shern (21001235)
