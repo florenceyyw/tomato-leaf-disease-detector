@@ -3,9 +3,8 @@ title: Tomato Leaf Disease Detector
 emoji: 🍅
 colorFrom: green
 colorTo: red
-sdk: streamlit
-sdk_version: 1.40.0
-app_file: app.py
+sdk: docker
+app_port: 8501
 pinned: false
 license: mit
 ---
