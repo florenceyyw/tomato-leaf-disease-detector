@@ -181,7 +181,7 @@ class_names = meta["class_names"]
 
 st.markdown(f"""
 <div class="app-header">
-  <h1>🍃 Tomato Leaf Disease Detector</h1>
+  <h1>Tomato Leaf Disease Detector</h1>
   <p>Upload a tomato leaf photograph and the model identifies the disease, reports its confidence,
   and highlights the regions it used to decide.</p>
   <div class="chip-row">
@@ -339,3 +339,16 @@ if active_img is not None:
                "agronomist, especially for field photographs.")
 else:
     st.info("Upload a leaf image or pick a sample above to see a prediction.")
+
+# ----------------------------------------------------------------- project info
+st.markdown("""
+<div style="margin-top:40px; padding:18px 22px; border-top:1px solid #e6ebe6;
+     color:#7a857a; font-size:0.82rem; line-height:1.65;">
+  <b style="color:#33543a;">Sunway University &mdash; School of Mathematical Sciences</b><br>
+  MAT5124 Machine Learning &middot; Group Project Report &middot; June 2026<br>
+  <i>Tomato Leaf Disease Detection Using Convolutional Neural Networks, Transfer Learning,
+  Explainable Artificial Intelligence, and Deployment</i><br>
+  Project theme: Artificial Intelligence Solutions Lab, from Training to Real World Deployment<br>
+  Prepared by Wong Yoke Yan (15093446), Yeong Jiun Shiung (25109521), Darren Yap Yee Shern (21001235)
+</div>
+""", unsafe_allow_html=True)
