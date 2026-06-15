@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Course material — not for publication
+*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Local artifacts
+*.log

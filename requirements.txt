@@ -1,0 +1,8 @@
+streamlit>=1.28
+tensorflow-cpu>=2.20,<2.22
+numpy>=1.26
+pillow>=10.0
+matplotlib>=3.7
+fastapi>=0.110
+uvicorn>=0.27
+python-multipart>=0.0.9
