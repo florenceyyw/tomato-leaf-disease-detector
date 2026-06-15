@@ -124,9 +124,37 @@ with st.expander("About this tool"):
         "check that it is reasoning about the symptoms rather than the background."
     )
 
+SAMPLE_DIR = "samples"
+
+
+@st.cache_data
+def list_samples():
+    """Return {display label: path} for any bundled sample leaf images."""
+    if not os.path.isdir(SAMPLE_DIR):
+        return {}
+    out = {}
+    for fn in sorted(os.listdir(SAMPLE_DIR)):
+        if fn.lower().endswith((".jpg", ".jpeg", ".png")):
+            out[os.path.splitext(fn)[0].replace("_", " ")] = os.path.join(SAMPLE_DIR, fn)
+    return out
+
+
+samples = list_samples()
 uploaded = st.file_uploader("Choose a leaf image", type=["jpg", "jpeg", "png"])
+
+pil_img = None
+source_caption = "uploaded leaf"
 if uploaded is not None:
     pil_img = Image.open(uploaded)
+elif samples:
+    st.caption("No leaf photo of your own? Try one of these sample leaves:")
+    choice = st.selectbox("Sample leaves", ["—"] + list(samples.keys()),
+                          label_visibility="collapsed")
+    if choice != "—":
+        pil_img = Image.open(samples[choice])
+        source_caption = f"sample: {choice}"
+
+if pil_img is not None:
     arr = prepare(pil_img, meta["img_size"])
 
     t0 = time.time()
@@ -136,7 +164,7 @@ if uploaded is not None:
     top_idx = int(np.argmax(probs))
     col1, col2 = st.columns(2)
     with col1:
-        st.image(pil_img, caption="uploaded leaf", use_container_width=True)
+        st.image(pil_img, caption=source_caption, use_container_width=True)
     with col2:
         st.metric("prediction", class_names[top_idx].replace("_", " "))
         st.metric("confidence", f"{probs[top_idx] * 100:.1f}%")
@@ -157,4 +185,4 @@ if uploaded is not None:
     st.warning("This tool is decision support, not a diagnosis. Confirm important "
                "cases with an agronomist, especially for field photographs.")
 else:
-    st.info("Awaiting an image upload.")
+    st.info("Upload a leaf image, or pick a sample leaf above, to run the model.")

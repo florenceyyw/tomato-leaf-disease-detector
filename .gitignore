@@ -14,3 +14,6 @@ env/
 
 # Local artifacts
 *.log
+
+# Submission bundle (the samples/ folder is what ships in the repo)
+sample_leaves.zip
