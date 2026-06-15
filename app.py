@@ -217,7 +217,10 @@ with right:
     samples = find_samples(class_names)
     if "sample_pick" not in st.session_state:
         st.session_state.sample_pick = None
+    if "sample_truth" not in st.session_state:
+        st.session_state.sample_truth = None
     if samples:
+        st.caption("Pick a leaf without knowing its disease, then see whether the model gets it right.")
         ncol = 4
         rows = (len(samples) + ncol - 1) // ncol
         k = 0
@@ -229,19 +232,23 @@ with right:
                 path, cls = samples[k]
                 with c:
                     st.image(path, use_container_width=True)
-                    if st.button(pretty(cls), key=f"s{k}"):
+                    if st.button(f"Sample {k + 1}", key=f"s{k}"):
                         st.session_state.sample_pick = path
+                        st.session_state.sample_truth = cls
                 k += 1
     else:
         st.caption("Sample images are not available in this deployment.")
 
 # resolve the active image
 active_img = None
+active_truth = None
 if uploaded is not None:
     active_img = Image.open(uploaded)
     st.session_state.sample_pick = None
+    st.session_state.sample_truth = None
 elif st.session_state.sample_pick:
     active_img = Image.open(st.session_state.sample_pick)
+    active_truth = st.session_state.sample_truth
 
 # ----------------------------------------------------------------- results
 st.write("")
@@ -271,6 +278,28 @@ if active_img is not None:
                inference time {latency_ms:.0f} ms</div>
         </div>
         """, unsafe_allow_html=True)
+
+        # Reveal block: only for sample leaves, shown AFTER the prediction so the
+        # demonstration is genuine (the leaf's true label was hidden until now).
+        if active_truth is not None:
+            correct = (class_names[top_idx] == active_truth)
+            if correct:
+                st.markdown(f"""
+                <div style="margin-top:12px; background:#e8f5e9; border:1px solid #a5d6a7;
+                     border-radius:10px; padding:12px 16px; animation: fadeIn 0.5s ease both;">
+                  <span style="color:#2e7d32; font-weight:700;">Correct.</span>
+                  <span style="color:#33543a;"> This leaf was labelled
+                  <b>{pretty(active_truth)}</b> in the dataset, and the model agreed.</span>
+                </div>""", unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="margin-top:12px; background:#fff4e5; border:1px solid #ffcc80;
+                     border-radius:10px; padding:12px 16px; animation: fadeIn 0.5s ease both;">
+                  <span style="color:#e65100; font-weight:700;">Mismatch.</span>
+                  <span style="color:#5a4632;"> This leaf was labelled
+                  <b>{pretty(active_truth)}</b> in the dataset, but the model predicted
+                  <b>{pretty(class_names[top_idx])}</b>. The heat map below shows what it focused on.</span>
+                </div>""", unsafe_allow_html=True)
 
     # probability distribution (custom styled, top 5)
     st.write("")
