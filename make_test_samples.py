@@ -2,7 +2,7 @@
 make_test_samples.py
 --------------------
 Reproduces the EXACT same leakage-controlled train/validation/test split used to
-train the model (group-aware, seed 42), then copies one image PER CLASS from the
+train the model (group-aware, seed 42), then copies two images PER CLASS from the
 held-out TEST set into a samples/ folder. This guarantees that the sample leaves
 shown in the app are images the model never trained on, so clicking one is a
 genuine live test on unseen data, not a replay of a memorised training image.
@@ -21,6 +21,7 @@ import sys
 import shutil
 import numpy as np
 from sklearn.model_selection import GroupShuffleSplit
+from PIL import Image
 
 # ---- must match the notebook exactly ----
 SEED = 42
@@ -90,17 +91,23 @@ def main():
     os.makedirs(out_dir)
     rng = np.random.default_rng(SEED)
     picked = 0
+    PER_CLASS = 2  # number of held-out test images to copy per class
     for i, c in enumerate(CLASS_NAMES):
         idx = np.where(y_test == i)[0]
         if len(idx) == 0:
             print(f"  warning: no test image for class {c}")
             continue
-        chosen = f_test[rng.choice(idx)]
-        ext = os.path.splitext(chosen)[1].lower()
-        dest = os.path.join(out_dir, f"{c}{ext}")
-        shutil.copy(chosen, dest)
-        picked += 1
-        print(f"  {c:<38} <- {os.path.basename(chosen)}")
+        n = min(PER_CLASS, len(idx))
+        for j, sel in enumerate(rng.choice(idx, size=n, replace=False), start=1):
+            chosen = f_test[sel]
+            dest = os.path.join(out_dir, f"{c.replace(' ', '_')}_{j}.jpg")
+            # downscale the held-out leaf to a web-friendly size (the model resizes to
+            # 224x224 anyway); keeps sample files small enough to commit without LFS
+            img = Image.open(chosen).convert("RGB")
+            img.thumbnail((512, 512))
+            img.save(dest, "JPEG", quality=85)
+            picked += 1
+            print(f"  {c:<38} #{j} <- {os.path.basename(chosen)}")
 
     print(f"\nDone. {picked} held-out test images written to {out_dir}/")
     print("These are genuinely unseen by the model, so the app demo is a real test.")

@@ -1,4 +1,4 @@
-import os, json, time, glob, re
+import os, json, time, glob, re, random
 import numpy as np
 import streamlit as st
 import tensorflow as tf
@@ -173,6 +173,7 @@ def find_samples(class_names):
             if ov > score:
                 best, score = c, ov
         out.append((p, best if best else os.path.basename(p)))
+    random.Random(42).shuffle(out)  # mix classes so the blind samples are not grouped by disease
     return out
 
 # ----------------------------------------------------------------- header
@@ -220,7 +221,12 @@ with right:
     if "sample_truth" not in st.session_state:
         st.session_state.sample_truth = None
     if samples:
-        st.caption("Pick a leaf without knowing its disease, then see whether the model gets it right.")
+        st.markdown(
+            f"<div style='background:#eef5ee; border:1px solid #cfe3cf; border-radius:8px; "
+            f"padding:9px 13px; font-size:0.8rem; color:#33543a; margin-bottom:10px;'>"
+            f"All {len(samples)} sample leaves are from the model's <b>held-out test set</b> "
+            f"(validation / test split) &mdash; never seen during training. Pick one blind, "
+            f"then see whether the model gets it right.</div>", unsafe_allow_html=True)
         ncol = 4
         rows = (len(samples) + ncol - 1) // ncol
         k = 0
